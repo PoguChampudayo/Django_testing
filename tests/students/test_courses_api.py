@@ -2,6 +2,7 @@ import pytest
 from rest_framework.test import APIClient
 from model_bakery import baker
 import sys
+from django_testing import settings
 from students.models import Course, Student
 
 @pytest.fixture
@@ -62,3 +63,9 @@ def test_course_delete(client, course_factory):
     courses = course_factory(name='Python')
     response = client.delete(f'/api/v1/courses/{str(courses.id)}/')
     assert response.status_code == 204
+
+
+    
+    
+    
+    

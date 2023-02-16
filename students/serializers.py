@@ -9,3 +9,4 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = ("id", "name", "students")
         
+
