@@ -24,9 +24,9 @@ def course_factory():
 @pytest.mark.django_db
 def test_first_course_addition(client, course_factory):
     courses = course_factory(name='Python')
-    response = client.get('/api/v1/courses/')
+    response = client.get(f'/api/v1/courses/{courses.id}/')
     assert response.status_code == 200
-    assert response.json()[0]['name'] == 'Python'
+    assert response.json()['name'] == 'Python'
 
 @pytest.mark.django_db    
 def test_get_proper_courses(client, course_factory):
@@ -37,12 +37,18 @@ def test_get_proper_courses(client, course_factory):
     assert courses[0].id == response.json()[0]['id']
     assert courses[0].name == response.json()[0]['name']
     
+@pytest.mark.django_db      
+def test_courses_id_filtration(client, course_factory):
+    courses = course_factory(_quantity=15)
+    response = client.get(f'/api/v1/courses/?id={courses[5].id}')
+    assert response.status_code == 200
+    assert response.json()[0]['id'] == courses[5].id
+    
 @pytest.mark.django_db    
 def test_course_creation(client):
-    Course.objects.create(name='Python')
-    response = client.get('/api/v1/courses/')
-    assert response.status_code == 200
-    assert response.json()[0]['name'] == 'Python'
+    response = client.post(path='/api/v1/courses/', data={'name': 'Python'})
+    assert response.status_code == 201
+    assert response.json()['name'] == 'Python'
     
 @pytest.mark.django_db    
 def test_course_update(client, course_factory):
