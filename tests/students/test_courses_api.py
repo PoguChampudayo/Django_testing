@@ -1,9 +1,8 @@
 import pytest
 from rest_framework.test import APIClient
 from model_bakery import baker
-import sys
-from django_testing import settings
 from students.models import Course, Student
+import random
 
 @pytest.fixture
 def client():
@@ -44,6 +43,14 @@ def test_courses_id_filtration(client, course_factory):
     response = client.get(f'/api/v1/courses/?id={courses[5].id}')
     assert response.status_code == 200
     assert response.json()[0]['id'] == courses[5].id
+    
+@pytest.mark.django_db      
+def test_courses_name_filtration(client, course_factory):
+    target = random.randint(0, 14)
+    courses = course_factory(_quantity=15)
+    response = client.get(f'/api/v1/courses/?name={courses[target].name}')
+    assert response.status_code == 200
+    assert response.json()[0]['name'] == courses[target].name    
     
 @pytest.mark.django_db    
 def test_course_creation(client):
